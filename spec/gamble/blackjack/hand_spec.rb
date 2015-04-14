@@ -5,6 +5,15 @@ module Gamble
     describe Hand do
       subject { described_class.new(*cards) }
 
+      context "empty hand" do
+        let(:cards) { nil }
+
+        its(:value) { is_expected.to eq(0) }
+        it { is_expected.not_to be_splittable }
+        it { is_expected.not_to be_blackjack }
+        it { is_expected.not_to be_busted }
+      end
+
       context "hands at beginning" do
         context "hard hand" do
           let(:cards) { [ Card.new(:seven, :clubs), Card.new(:eight, :hearts) ] }

@@ -3,6 +3,7 @@ require "gamble/blackjack/card"
 require "gamble/blackjack/hand"
 require "gamble/blackjack/deck"
 require "gamble/blackjack/shoe"
+require "gamble/blackjack/player"
 
 module Gamble
   module Blackjack

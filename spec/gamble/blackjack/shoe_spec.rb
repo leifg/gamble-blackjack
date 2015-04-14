@@ -29,6 +29,11 @@ module Gamble
           _, card = subject.draw
           expect(card).to eq(Card.new(:ace, :hearts))
         end
+
+        it "sets new shoes first card to second card" do
+          shoe, _ = subject.draw
+          expect(shoe.cards.first).to eq(Card.new(:two, :hearts))
+        end
       end
 
       describe ".init_with_decks" do
