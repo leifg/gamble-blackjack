@@ -29,8 +29,8 @@ module Gamble
         value > Gamble::Blackjack::MAX_VALUE
       end
 
-      def deal(card)
-        Hand.new(*(cards << card))
+      def deal(*dealed_cards)
+        Hand.new(*(cards + dealed_cards))
       end
 
       def ==(o)

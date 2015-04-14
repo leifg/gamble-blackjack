@@ -38,7 +38,7 @@ module Gamble
         end
       end
 
-      describe "bet" do
+      describe "#bet" do
         context "static bet" do
           let(:bet) { 20 }
 
@@ -53,6 +53,18 @@ module Gamble
           it "returns variable bet" do
             expect(subject.bet(17)).to eq(17)
           end
+        end
+      end
+
+      describe "#deal" do
+        let(:card) { Card.new(:seven, :hearts) }
+
+        it "returns a player" do
+          expect(subject.deal(card)).to be_a(Player)
+        end
+
+        it "returns a new player" do
+          expect(subject.deal(card).object_id).not_to eq(subject.object_id)
         end
       end
     end
