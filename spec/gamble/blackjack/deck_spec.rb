@@ -9,7 +9,7 @@ module Gamble
         its(:size) { is_expected.to eq(Gamble::Blackjack::DECK_SIZE) }
       end
 
-      context "unique" do
+      context "uniqueness" do
         it "has unique cards" do
           expect(subject.cards.uniq.size).to eq(Gamble::Blackjack::DECK_SIZE)
         end

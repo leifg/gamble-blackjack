@@ -19,6 +19,10 @@ module Gamble
         self.suit == o.suit
       end
 
+      def hash
+        [self.class, self.rank, self.suit].hash
+      end
+
       alias_method :eql?, :==
 
       private
