@@ -28,6 +28,17 @@ module Gamble
       def busted?
         value > Gamble::Blackjack::MAX_VALUE
       end
+
+      def deal(card)
+        Hand.new(*(cards << card))
+      end
+
+      def ==(o)
+        self.class == o.class &&
+        self.cards == o.cards
+      end
+
+      alias_method :eql?, :==
     end
   end
 end

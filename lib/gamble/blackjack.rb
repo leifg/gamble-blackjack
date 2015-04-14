@@ -1,11 +1,11 @@
 require "gamble/blackjack/version"
 require "gamble/blackjack/card"
 require "gamble/blackjack/hand"
+require "gamble/blackjack/deck"
 
 module Gamble
   module Blackjack
     MAX_VALUE = 21
-
-    # Your code goes here...
+    DECK_SIZE = 52
   end
 end

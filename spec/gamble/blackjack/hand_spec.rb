@@ -61,7 +61,7 @@ module Gamble
         end
       end
 
-      context "Hands in game" do
+      context "hands in game" do
         context "regular hand" do
           let(:cards) do
             [
@@ -90,6 +90,24 @@ module Gamble
           it { is_expected.not_to be_splittable }
           it { is_expected.not_to be_blackjack }
           it { is_expected.to be_busted }
+        end
+      end
+
+      describe "#deal" do
+        context "regular hand" do
+          let(:cards) { [Card.new(:seven, :clubs), Card.new(:eight, :hearts)] }
+          let(:card) { Card.new(:three, :hearts) }
+          let(:expected_hand) do
+            described_class.new(
+              Card.new(:seven, :clubs),
+              Card.new(:eight, :hearts),
+              Card.new(:three, :hearts),
+            )
+          end
+
+          it "returns correct hand" do
+            expect(subject.deal(card)).to eq(expected_hand)
+          end
         end
       end
     end

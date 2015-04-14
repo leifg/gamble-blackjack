@@ -13,6 +13,14 @@ module Gamble
         self.class.ranks_to_value[rank]
       end
 
+      def ==(o)
+        self.class == o.class &&
+        self.rank == o.rank &&
+        self.suit == o.suit
+      end
+
+      alias_method :eql?, :==
+
       private
 
       def self.validate_rank(rank)
