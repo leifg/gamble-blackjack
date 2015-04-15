@@ -36,7 +36,7 @@ module Gamble
       end
 
       describe "#value" do
-        context "Number Card" do
+        context "number Card" do
           subject { described_class.new(:seven, :hearts) }
 
           it "returns [7]" do
@@ -44,7 +44,7 @@ module Gamble
           end
         end
 
-        context "Face Card" do
+        context "pitcher card" do
           subject { described_class.new(:king, :clubs) }
 
           it "returns [10]" do
@@ -52,7 +52,7 @@ module Gamble
           end
         end
 
-        context "Ace Card" do
+        context "ace Card" do
           subject { described_class.new(:ace, :spades) }
 
           it "returns [1,11]" do

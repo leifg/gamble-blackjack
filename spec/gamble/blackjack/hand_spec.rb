@@ -42,7 +42,7 @@ module Gamble
           it { is_expected.not_to be_busted }
         end
 
-        context "two face cards" do
+        context "two pitcher cards" do
           let(:cards) { [ Card.new(:queen, :clubs), Card.new(:jack, :hearts) ] }
 
           its(:value) { is_expected.to eq(20) }
