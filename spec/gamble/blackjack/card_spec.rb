@@ -9,7 +9,6 @@ module Gamble
         let(:rank) { :eight }
         let(:suit) { :diamonds }
 
-
         context "valid" do
           it "does not raise an error for a valid card" do
             expect { subject }.not_to raise_error
