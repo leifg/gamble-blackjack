@@ -65,7 +65,7 @@ module Gamble
         end
 
         it "returns a new player" do
-          expect(subject.deal(card).object_id).not_to eq(subject.object_id)
+          expect(subject.deal(card)).not_to be_equal(subject)
         end
       end
     end
