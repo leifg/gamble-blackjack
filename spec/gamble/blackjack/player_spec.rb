@@ -10,6 +10,7 @@ module Gamble
 
     describe Player do
       subject { described_class.new(
+        name: "Joe",
         strategy: FirstActionStrategy,
         money: money,
         bet: bet,
