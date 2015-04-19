@@ -33,6 +33,10 @@ module Gamble
         Hand.new(*(cards + dealed_cards))
       end
 
+      def size
+        cards.size
+      end
+
       def ==(o)
         self.class == o.class &&
         self.cards == o.cards

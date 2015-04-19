@@ -15,6 +15,13 @@ module Gamble
         [Shoe.new(cards.last(cards.size - 1)), cards.first]
       end
 
+      def ==(o)
+        self.class == o.class &&
+        self.cards == o.cards
+      end
+
+      alias_method :eql?, :==
+
       def self.init_with_decks(num_of_decks)
         new(num_of_decks.times.map { Deck.new.cards }.flatten.shuffle)
       end

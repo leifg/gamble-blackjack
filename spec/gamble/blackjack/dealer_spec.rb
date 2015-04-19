@@ -18,12 +18,6 @@ module Gamble
         end
       end
 
-      describe "#hand" do
-        it "is not accessible from the outside" do
-          expect(subject.public_methods).not_to include(:hand)
-        end
-      end
-
       describe "#up_card" do
         let(:first_card) { Card.new(:king, :spades) }
         let(:second_card) { Card.new(:three, :hearts) }

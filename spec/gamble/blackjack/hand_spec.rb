@@ -119,6 +119,18 @@ module Gamble
           end
         end
       end
+
+      describe "#size" do
+        let(:cards) do
+          [
+            Card.new(:queen, :clubs),
+            Card.new(:eight, :hearts),
+            Card.new(:five, :diamonds),
+          ]
+        end
+
+        its(:size) { is_expected.to eq(3) }
+      end
     end
   end
 end

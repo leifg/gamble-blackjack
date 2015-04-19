@@ -9,15 +9,20 @@ module Gamble
     end
 
     describe Player do
-      subject { described_class.new(
-        name: "Joe",
-        strategy: FirstActionStrategy,
-        money: money,
-        bet: bet,
-      ) }
+      subject do
+        described_class.new(
+          name: name,
+          strategy: FirstActionStrategy,
+          money: money,
+          bet: bet,
+          hand: hand,
+        )
+      end
 
+      let(:name) { "Joe" }
       let(:money) { 1000 }
       let(:bet) { 100 }
+      let(:hand) { Hand.new }
 
       describe "act" do
         let(:params) do
@@ -66,6 +71,44 @@ module Gamble
 
         it "returns a new player" do
           expect(subject.deal(card)).not_to be_equal(subject)
+        end
+      end
+
+      describe "#add_money" do
+        let(:money) { 1000 }
+        let(:amount) { 100 }
+
+        let(:expected_player) do
+          described_class.new(
+            name: "Joe",
+            strategy: FirstActionStrategy,
+            money: (money + amount),
+            bet: bet,
+            hand: hand,
+          )
+        end
+
+        it "returns a new player with add money" do
+          expect(subject.add_money(amount)).to eq(expected_player)
+        end
+      end
+
+      describe ".transfer" do
+        let(:dealer) { Dealer.new }
+        let(:player) { subject }
+        let(:money) { 1000 }
+        let(:amount) { 100 }
+
+        it "transfers money from player to dealer" do
+          new_player, new_dealer = described_class.transfer(from: player, to: dealer, amount: amount)
+          expect(new_player.money).to eq(900)
+          expect(new_dealer.money).to eq(100)
+        end
+
+        it "preseserves types" do
+          new_player, new_dealer = described_class.transfer(from: player, to: dealer, amount: amount)
+          expect(new_player).to be_a(Player)
+          expect(new_dealer).to be_a(Dealer)
         end
       end
     end

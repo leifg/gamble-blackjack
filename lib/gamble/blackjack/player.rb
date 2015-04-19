@@ -39,6 +39,30 @@ module Gamble
           hand: hand.deal(*cards)
         )
       end
+
+      def add_money(amount)
+        Player.new(
+          name: name,
+          strategy: @strategy_module,
+          money: money + amount,
+          bet: @bet,
+          hand: hand
+        )
+      end
+
+      def ==(o)
+        self.class == o.class &&
+        @strategy_module == o.instance_variable_get("@strategy_module") &&
+        self.money == o.money &&
+        self.bet == o.bet &&
+        self.hand == o.hand
+      end
+
+      alias_method :eql?, :==
+
+      def self.transfer(from:, to:, amount:)
+        [from.add_money(amount * -1), to.add_money(amount)]
+      end
     end
   end
 end
