@@ -14,6 +14,14 @@ module Gamble
       def deal(*cards)
         Dealer.new(hand: hand.deal(*cards))
       end
+
+      def up_card
+        hand.cards.first
+      end
+
+      private
+
+      attr_reader :hand
     end
   end
 end
