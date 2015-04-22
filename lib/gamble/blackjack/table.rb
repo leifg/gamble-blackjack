@@ -31,6 +31,7 @@ module Gamble
               possible_actions: possible_actions,
               hand: participant.hand,
               up_card: up_card,
+              shoe: running_shoe,
             )
             if action == :hit
               running_shoe, card = running_shoe.draw

@@ -2,17 +2,11 @@ require "spec_helper"
 
 module Gamble
   module Blackjack
-    module FirstActionStrategy
-      def act(possible_actions:, upcard:, players:)
-        possible_actions.first
-      end
-    end
-
     describe Player do
       subject do
         described_class.new(
           name: name,
-          strategy: FirstActionStrategy,
+          strategy: strategy,
           money: money,
           bet: bet,
           hand: hand,
@@ -20,6 +14,7 @@ module Gamble
       end
 
       let(:name) { "Joe" }
+      let(:strategy) { double("Strategy", call: :hit) }
       let(:money) { 1000 }
       let(:bet) { 100 }
       let(:hand) { Hand.new }
@@ -40,6 +35,11 @@ module Gamble
 
           it "returns action" do
             expect(subject.act(params)).to eq(:hit)
+          end
+
+          it "sends correct message to strategy" do
+            subject.act(params)
+            expect(strategy).to have_received(:call).with(params)
           end
         end
       end
@@ -81,7 +81,7 @@ module Gamble
         let(:expected_player) do
           described_class.new(
             name: "Joe",
-            strategy: FirstActionStrategy,
+            strategy: strategy,
             money: (money + amount),
             bet: bet,
             hand: hand,

@@ -4,7 +4,7 @@ module Gamble
       def initialize(money: 0, hand: Hand.new)
         super(
           name: "Dealer",
-          strategy: Gamble::Blackjack::Strategies::DealerStrategy,
+          strategy: Gamble::Blackjack::Strategies::DealerStrategy.new,
           money: money,
           bet: 0,
           hand: hand

@@ -8,18 +8,16 @@ module Gamble
       attr_reader :strategy
       attr_reader :money
 
-      def_delegators :strategy, :act
-
       def initialize(name:, strategy:, money:, bet:, hand: Hand.new)
         @name = name
         @hand = hand.freeze
         @money = money.freeze
         @bet = bet.freeze
-        @strategy_module = strategy
+        @strategy = strategy
       end
 
-      def strategy
-        Object.new.extend(@strategy_module).freeze
+      def act(params)
+        strategy.call(params)
       end
 
       def bet(round = 0)
@@ -33,7 +31,7 @@ module Gamble
       def deal(*cards)
         Player.new(
           name: name,
-          strategy: @strategy_module,
+          strategy: strategy,
           money: money,
           bet: @bet,
           hand: hand.deal(*cards)
@@ -43,7 +41,7 @@ module Gamble
       def add_money(amount)
         Player.new(
           name: name,
-          strategy: @strategy_module,
+          strategy: strategy,
           money: money + amount,
           bet: @bet,
           hand: hand

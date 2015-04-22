@@ -8,17 +8,17 @@ module Gamble
       end
 
       describe "#next" do
-        module StandStrategy
-          def act(*args)
-            :stand
-          end
+        before(:each) do
+          allow(player).to receive(:act).and_return(:stand)
         end
 
-        let(:players) do
-          [
-            Player.new(name: "Alice", strategy: StandStrategy, money: 100, bet: 1,),
-          ]
+        let(:strategy) { proc { :stand } }
+
+        let(:player) do
+          Player.new(name: "Alice", strategy: strategy, money: 100, bet: 1)
         end
+
+        let(:players) { [ player ] }
 
         let(:shoe) do
           Shoe.new([
@@ -49,7 +49,7 @@ module Gamble
           [
             Player.new(
               name: "Alice",
-              strategy: StandStrategy,
+              strategy: strategy,
               money: 99,
               bet: 1,
               hand: Hand.new(

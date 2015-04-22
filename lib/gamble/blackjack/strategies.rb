@@ -1,8 +1,8 @@
 module Gamble
   module Blackjack
     module Strategies
-      module DealerStrategy
-        def act(possible_actions:, hand:, up_card:)
+      class DealerStrategy
+        def call(possible_actions:, hand:, up_card:, shoe:)
           if hand.value < 17
             :hit
           else
