@@ -16,8 +16,13 @@ module Gamble
       end
 
       def next
-        # burn card
-        running_shoe, _ = shoe.draw
+        if round == 0
+          # burn card
+          running_shoe, _ = shoe.draw
+        else
+          running_shoe = shoe
+        end
+
         running_shoe, running_participants = deal_cards(running_shoe)
 
         up_card = running_participants.last.up_card

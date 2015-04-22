@@ -21,7 +21,7 @@ module Gamble
         let(:players) { [ player ] }
 
         let(:shoe) do
-          Shoe.new([
+          Shoe.new(cards: [
             Card.new(:ace, :hearts),
             Card.new(:two, :hearts),
             Card.new(:three, :hearts),
@@ -61,7 +61,7 @@ module Gamble
         end
 
         let(:expected_shoe) do
-          Shoe.new([
+          Shoe.new(cards: [
             Card.new(:eight, :hearts),
             Card.new(:nine, :hearts),
             Card.new(:ten, :hearts),

@@ -4,7 +4,7 @@ module Gamble
   module Blackjack
     describe Shoe do
       describe "#draw" do
-        subject { described_class.new(cards) }
+        subject { described_class.new(cards: cards) }
         let(:cards) do
           [
             Card.new(:ace, :hearts),
@@ -33,6 +33,11 @@ module Gamble
         it "sets new shoes first card to second card" do
           shoe, _ = subject.draw
           expect(shoe.cards.first).to eq(Card.new(:two, :hearts))
+        end
+
+        it "puts card in the discard tray" do
+          shoe, card = subject.draw
+          expect(shoe.discard_tray).to eq([card])
         end
       end
 
