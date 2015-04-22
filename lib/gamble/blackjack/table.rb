@@ -16,11 +16,15 @@ module Gamble
       end
 
       def next
+        if shoe.size < 10
+          running_shoe = running_shoe.reset
+        else
+          running_shoe = shoe
+        end
+
         if round == 0
           # burn card
           running_shoe, _ = shoe.draw
-        else
-          running_shoe = shoe
         end
 
         running_shoe, running_participants = deal_cards(running_shoe)

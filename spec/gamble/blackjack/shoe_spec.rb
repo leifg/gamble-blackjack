@@ -39,6 +39,34 @@ module Gamble
           shoe, card = subject.draw
           expect(shoe.discard_tray).to eq([card])
         end
+
+        it "raises error on drawing from empty shoe" do
+          shoe = subject
+          shoe.cards.size.times{ shoe, _ = shoe.draw }
+          expect { shoe.draw }.to raise_error(ArgumentError)
+        end
+      end
+
+      describe "#reset" do
+        subject { described_class.new(cards: cards, discard_tray: discared_cards) }
+
+        let(:cards) do
+          [
+            Card.new(:ace, :hearts),
+            Card.new(:two, :hearts),
+          ]
+        end
+
+        let(:discared_cards) do
+          [
+            Card.new(:three, :hearts),
+            Card.new(:four, :hearts),
+          ]
+        end
+
+        it "empties discard tray" do
+          expect(subject.reset.discard_tray).to be_empty
+        end
       end
 
       describe ".init_with_decks" do

@@ -32,6 +32,9 @@ module Gamble
             Card.new(:eight, :hearts),
             Card.new(:nine, :hearts),
             Card.new(:ten, :hearts),
+            Card.new(:jack, :hearts),
+            Card.new(:queen, :hearts),
+            Card.new(:king, :hearts),
           ])
         end
 
@@ -65,6 +68,18 @@ module Gamble
             Card.new(:eight, :hearts),
             Card.new(:nine, :hearts),
             Card.new(:ten, :hearts),
+            Card.new(:jack, :hearts),
+            Card.new(:queen, :hearts),
+            Card.new(:king, :hearts),
+          ],
+          discard_tray: [
+            Card.new(:ace, :hearts),
+            Card.new(:two, :hearts),
+            Card.new(:three, :hearts),
+            Card.new(:four, :hearts),
+            Card.new(:five, :hearts),
+            Card.new(:six, :hearts),
+            Card.new(:seven, :hearts),
           ])
         end
 
