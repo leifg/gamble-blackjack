@@ -29,12 +29,24 @@ module Gamble
       end
 
       def deal(*cards)
+        raise RuntimeError, "Cannot deal to busted hand" if hand.busted?
+
         Player.new(
           name: name,
           strategy: strategy,
           money: money,
           bet: @bet,
           hand: hand.deal(*cards)
+        )
+      end
+
+      def reset
+        Player.new(
+          name: name,
+          strategy: strategy,
+          money: money,
+          bet: @bet,
+          hand: Hand.new
         )
       end
 

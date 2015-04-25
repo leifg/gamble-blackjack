@@ -17,7 +17,7 @@ module Gamble
 
       def next
         if shoe.size < 10
-          running_shoe = running_shoe.reset
+          running_shoe, _ = shoe.reset.draw
         else
           running_shoe = shoe
         end
@@ -27,7 +27,8 @@ module Gamble
           running_shoe, _ = shoe.draw
         end
 
-        running_shoe, running_participants = deal_cards(running_shoe)
+        running_participants = participants.map(&:reset)
+        running_shoe, running_participants = deal_cards(running_shoe, running_participants)
 
         up_card = running_participants.last.up_card
 
@@ -66,7 +67,7 @@ module Gamble
 
       private
 
-      def deal_cards(from, to = participants, num = 2)
+      def deal_cards(from, to, num = 2)
         return [from, to] if num < 1
 
         running_players = to.map do |player|
@@ -83,20 +84,30 @@ module Gamble
       end
 
       def self.calculate_bets(players_with_bets)
-        dealer, _ = players_with_bets.pop
-
-        result_players = players_with_bets.map do |player, bet|
-          if player.hand.busted? || player.hand.value < dealer.hand.value
-            player, dealer = Player.transfer(from: player, to: dealer, amount: bet)
-          elsif player.hand.value > dealer.hand.value
+        running_dealer, _ = players_with_bets.pop
+        players_with_transfers = players_with_bets.map do |player, bet|
+          transfer = if player.hand.busted? || player.hand.value < running_dealer.hand.value
+            bet
+          elsif player.hand.value > running_dealer.hand.value
             if player.hand.blackjack?
               bet = bet * 1.5
             end
-            dealer, player = Player.transfer(from: dealer, to: player, amount: bet)
+            bet * -1
+          else
+            0
           end
-          player
+          [player, transfer]
         end
-        [dealer, result_players]
+
+        result_players = []
+
+
+        players_with_transfers.each do |player, transfer|
+          tmp_player, running_dealer = Player.transfer(from: player, to: running_dealer, amount: transfer)
+          result_players << tmp_player
+        end
+
+        [running_dealer, result_players]
       end
     end
   end

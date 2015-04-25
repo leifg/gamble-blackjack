@@ -14,7 +14,7 @@ module Gamble
       end
 
       def draw
-        raise ArgumentError, "Shoe is empty" if cards.empty?
+        raise RuntimeError, "Shoe is empty" if cards.empty?
         new_cards = cards.last(cards.size - 1)
         drawn_card = cards.first
 

@@ -43,7 +43,7 @@ module Gamble
         it "raises error on drawing from empty shoe" do
           shoe = subject
           shoe.cards.size.times{ shoe, _ = shoe.draw }
-          expect { shoe.draw }.to raise_error(ArgumentError)
+          expect { shoe.draw }.to raise_error(RuntimeError)
         end
       end
 

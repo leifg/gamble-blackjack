@@ -12,7 +12,11 @@ module Gamble
       end
 
       def deal(*cards)
-        Dealer.new(hand: hand.deal(*cards))
+        Dealer.new(hand: hand.deal(*cards), money: money)
+      end
+
+      def reset
+        Dealer.new(money: money)
       end
 
       def add_money(amount)

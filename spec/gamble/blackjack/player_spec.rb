@@ -65,12 +65,47 @@ module Gamble
       describe "#deal" do
         let(:card) { Card.new(:seven, :hearts) }
 
-        it "returns a player" do
-          expect(subject.deal(card)).to be_a(Player)
+        context "empty hand" do
+          it "returns a player" do
+            expect(subject.deal(card)).to be_a(Player)
+          end
+
+          it "returns a new player" do
+            expect(subject.deal(card)).not_to be_equal(subject)
+          end
         end
 
-        it "returns a new player" do
-          expect(subject.deal(card)).not_to be_equal(subject)
+        context "busted hand" do
+          let(:hand) do
+            Hand.new(
+              Card.new(:eight, :spades),
+              Card.new(:nine, :diamonds),
+              Card.new(:ten, :hearts)
+            )
+          end
+
+          it "raises error on dealing busted hand" do
+            expect { subject.deal(card) }.to raise_error(RuntimeError)
+          end
+
+        end
+      end
+
+      describe "#reset" do
+        let(:hand) do
+          Hand.new(
+            Card.new(:eight, :spades),
+            Card.new(:nine, :diamonds),
+          )
+        end
+
+        it "returns player with empty hand" do
+          player = subject.reset
+          expect(player.hand.cards).to be_empty
+        end
+
+        it "returns a player" do
+          expect(subject.reset).to be_a(Player)
         end
       end
 
@@ -99,16 +134,40 @@ module Gamble
         let(:money) { 1000 }
         let(:amount) { 100 }
 
-        it "transfers money from player to dealer" do
-          new_player, new_dealer = described_class.transfer(from: player, to: dealer, amount: amount)
-          expect(new_player.money).to eq(900)
-          expect(new_dealer.money).to eq(100)
+        context "once" do
+          it "transfers money from player to dealer" do
+            new_player, new_dealer = described_class.transfer(from: player, to: dealer, amount: amount)
+            expect(new_player.money).to eq(900)
+            expect(new_dealer.money).to eq(100)
+          end
+
+          it "transfers money from dealer to player" do
+            new_dealer, new_player = described_class.transfer(from: dealer, to: player, amount: amount)
+            expect(new_player.money).to eq(1100)
+            expect(new_dealer.money).to eq(-100)
+          end
+
+          it "preseserves types" do
+            new_player, new_dealer = described_class.transfer(from: player, to: dealer, amount: amount)
+            expect(new_player).to be_a(Player)
+            expect(new_dealer).to be_a(Dealer)
+          end
         end
 
-        it "preseserves types" do
-          new_player, new_dealer = described_class.transfer(from: player, to: dealer, amount: amount)
-          expect(new_player).to be_a(Player)
-          expect(new_dealer).to be_a(Dealer)
+        context "twice" do
+          it "transfers money from player to dealer" do
+            new_player, new_dealer = described_class.transfer(from: player, to: dealer, amount: amount)
+            new_player, new_dealer = described_class.transfer(from: new_player, to: new_dealer, amount: amount)
+            expect(new_player.money).to eq(800)
+            expect(new_dealer.money).to eq(200)
+          end
+
+          it "transfers money from dealer to player" do
+            new_dealer, new_player = described_class.transfer(from: dealer, to: player, amount: amount)
+            new_dealer, new_player = described_class.transfer(from: new_dealer, to: new_player, amount: amount)
+            expect(new_player.money).to eq(1200)
+            expect(new_dealer.money).to eq(-200)
+          end
         end
       end
     end
