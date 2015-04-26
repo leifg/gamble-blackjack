@@ -8,12 +8,14 @@ module Gamble
       end
 
       def value
-        cards.inject(0) do |sum, card|
-          if (sum + card.value.max) <= Gamble::Blackjack::MAX_VALUE
-            sum + card.value.max
-          else
-            sum + card.value.min
-          end
+        return 0 if cards.nil? || cards.empty?
+        min_sum = cards.map{|c| c.value.min}.inject(&:+)
+        max_sum = cards.map{|c| c.value.max}.inject(&:+)
+
+        if max_sum > Gamble::Blackjack::MAX_VALUE
+          min_sum
+        else
+          max_sum
         end
       end
 

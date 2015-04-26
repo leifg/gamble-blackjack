@@ -16,6 +16,14 @@ module Gamble
         @strategy = strategy
       end
 
+      def dealable?
+        if hand.busted? || hand.cards.count >= 5
+          false
+        else
+          true
+        end
+      end
+
       def act(params)
         strategy.call(params)
       end

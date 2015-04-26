@@ -54,7 +54,7 @@ module Gamble
         context "two aces" do
           let(:cards) { [ Card.new(:ace, :clubs), Card.new(:ace, :hearts) ] }
 
-          its(:value) { is_expected.to eq(12) }
+          its(:value) { is_expected.to eq(2) }
           it { is_expected.to be_splittable }
           it { is_expected.not_to be_blackjack }
           it { is_expected.not_to be_busted }
@@ -99,6 +99,23 @@ module Gamble
           it { is_expected.not_to be_splittable }
           it { is_expected.not_to be_blackjack }
           it { is_expected.to be_busted }
+        end
+
+        context "high hand with ace" do
+          let(:cards) do
+            [
+              Card.new(:ace, :hearts),
+              Card.new(:five, :spades),
+              Card.new(:three, :diamonds),
+              Card.new(:two, :clubs),
+              Card.new(:six, :hearts),
+            ]
+          end
+
+          its(:value) { is_expected.to eq(17) }
+          it { is_expected.not_to be_splittable }
+          it { is_expected.not_to be_blackjack }
+          it { is_expected.not_to be_busted }
         end
       end
 

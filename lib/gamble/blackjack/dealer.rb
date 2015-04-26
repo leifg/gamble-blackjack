@@ -17,6 +17,10 @@ module Gamble
         )
       end
 
+      def max_cards
+        21
+      end
+
       def up_card
         hand.cards.first
       end

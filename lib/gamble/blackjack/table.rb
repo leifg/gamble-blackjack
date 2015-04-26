@@ -37,17 +37,21 @@ module Gamble
           bet = participant.bet
 
           begin
-            action = participant.act(
-              possible_actions: possible_actions,
-              hand: participant.hand,
-              up_card: up_card,
-              shoe: running_shoe,
-            )
+            action = if possible_actions.size == 1
+              possible_actions.first
+            else
+              participant.act(
+                possible_actions: possible_actions,
+                hand: participant.hand,
+                up_card: up_card,
+                shoe: running_shoe,
+              )
+            end
             if action == :hit
               running_shoe, card = running_shoe.draw
               participant = participant.deal(card)
             end
-          end while(action == :hit && participant.hand.size < 5)
+          end while(action != :stand && participant.dealable?)
           [participant, bet]
         end
 
