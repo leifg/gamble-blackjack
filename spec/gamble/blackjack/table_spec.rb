@@ -15,7 +15,7 @@ module Gamble
         let(:strategy) { proc { :stand } }
 
         let(:player) do
-          Player.new(name: "Alice", strategy: strategy, money: 100, bet: 1)
+          Player.new(name: "Alice", strategy: strategy, bankroll: 100, bet: 1)
         end
 
         let(:players) { [ player ] }
@@ -67,7 +67,7 @@ module Gamble
               Player.new(
                 name: "Alice",
                 strategy: strategy,
-                money: 99,
+                bankroll: 99,
                 bet: 1,
                 hand: Hand.new(
                   Card.new(:two, :hearts),
@@ -112,7 +112,7 @@ module Gamble
 
           let(:expected_dealer) do
             Dealer.new(
-              money: 1,
+              bankroll: 1,
               hand: Hand.new(
                 Card.new(:three, :hearts),
                 Card.new(:five, :hearts),
@@ -142,16 +142,16 @@ module Gamble
         end
 
         context "2 rounds" do
-          it "correctly removes money from players" do
+          it "correctly removes bankroll from players" do
             table = subject.next
             table = table.next
-            expect(table.players.first.money).to eq(98)
+            expect(table.players.first.bankroll).to eq(98)
           end
 
-          it "correctly adds money to dealer" do
+          it "correctly adds bankroll to dealer" do
             table = subject.next
             table = table.next
-            expect(table.dealer.money).to eq(2)
+            expect(table.dealer.bankroll).to eq(2)
           end
         end
       end

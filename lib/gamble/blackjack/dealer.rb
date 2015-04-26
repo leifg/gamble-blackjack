@@ -1,26 +1,26 @@
 module Gamble
   module Blackjack
     class Dealer < Player
-      def initialize(money: 0, hand: Hand.new)
+      def initialize(bankroll: 0, hand: Hand.new)
         super(
           name: "Dealer",
           strategy: Gamble::Blackjack::Strategies::DealerStrategy.new,
-          money: money,
+          bankroll: bankroll,
           bet: 0,
           hand: hand
         )
       end
 
       def deal(*cards)
-        Dealer.new(hand: hand.deal(*cards), money: money)
+        Dealer.new(hand: hand.deal(*cards), bankroll: bankroll)
       end
 
       def reset
-        Dealer.new(money: money)
+        Dealer.new(bankroll: bankroll)
       end
 
-      def add_money(amount)
-        Dealer.new(hand: hand, money: money + amount)
+      def add_bankroll(amount)
+        Dealer.new(hand: hand, bankroll: bankroll + amount)
       end
 
       def up_card

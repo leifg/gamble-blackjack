@@ -6,12 +6,12 @@ module Gamble
       attr_reader :name
       attr_reader :hand
       attr_reader :strategy
-      attr_reader :money
+      attr_reader :bankroll
 
-      def initialize(name:, strategy:, money:, bet:, hand: Hand.new)
+      def initialize(name:, strategy:, bankroll:, bet:, hand: Hand.new)
         @name = name
         @hand = hand.freeze
-        @money = money.freeze
+        @bankroll = bankroll.freeze
         @bet = bet.freeze
         @strategy = strategy
       end
@@ -34,7 +34,7 @@ module Gamble
         Player.new(
           name: name,
           strategy: strategy,
-          money: money,
+          bankroll: bankroll,
           bet: @bet,
           hand: hand.deal(*cards)
         )
@@ -44,17 +44,17 @@ module Gamble
         Player.new(
           name: name,
           strategy: strategy,
-          money: money,
+          bankroll: bankroll,
           bet: @bet,
           hand: Hand.new
         )
       end
 
-      def add_money(amount)
+      def add_bankroll(amount)
         Player.new(
           name: name,
           strategy: strategy,
-          money: money + amount,
+          bankroll: bankroll + amount,
           bet: @bet,
           hand: hand
         )
@@ -63,7 +63,7 @@ module Gamble
       def ==(o)
         self.class == o.class &&
         @strategy_module == o.instance_variable_get("@strategy_module") &&
-        self.money == o.money &&
+        self.bankroll == o.bankroll &&
         self.bet == o.bet &&
         self.hand == o.hand
       end
@@ -71,7 +71,7 @@ module Gamble
       alias_method :eql?, :==
 
       def self.transfer(from:, to:, amount:)
-        [from.add_money(amount * -1), to.add_money(amount)]
+        [from.add_bankroll(amount * -1), to.add_bankroll(amount)]
       end
     end
   end

@@ -7,7 +7,7 @@ module Gamble
         described_class.new(
           name: name,
           strategy: strategy,
-          money: money,
+          bankroll: bankroll,
           bet: bet,
           hand: hand,
         )
@@ -15,7 +15,7 @@ module Gamble
 
       let(:name) { "Joe" }
       let(:strategy) { double("Strategy", call: :hit) }
-      let(:money) { 1000 }
+      let(:bankroll) { 1000 }
       let(:bet) { 100 }
       let(:hand) { Hand.new }
 
@@ -109,42 +109,42 @@ module Gamble
         end
       end
 
-      describe "#add_money" do
-        let(:money) { 1000 }
+      describe "#add_bankroll" do
+        let(:bankroll) { 1000 }
         let(:amount) { 100 }
 
         let(:expected_player) do
           described_class.new(
             name: "Joe",
             strategy: strategy,
-            money: (money + amount),
+            bankroll: (bankroll + amount),
             bet: bet,
             hand: hand,
           )
         end
 
-        it "returns a new player with add money" do
-          expect(subject.add_money(amount)).to eq(expected_player)
+        it "returns a new player with add bankroll" do
+          expect(subject.add_bankroll(amount)).to eq(expected_player)
         end
       end
 
       describe ".transfer" do
         let(:dealer) { Dealer.new }
         let(:player) { subject }
-        let(:money) { 1000 }
+        let(:bankroll) { 1000 }
         let(:amount) { 100 }
 
         context "once" do
-          it "transfers money from player to dealer" do
+          it "transfers bankroll from player to dealer" do
             new_player, new_dealer = described_class.transfer(from: player, to: dealer, amount: amount)
-            expect(new_player.money).to eq(900)
-            expect(new_dealer.money).to eq(100)
+            expect(new_player.bankroll).to eq(900)
+            expect(new_dealer.bankroll).to eq(100)
           end
 
-          it "transfers money from dealer to player" do
+          it "transfers bankroll from dealer to player" do
             new_dealer, new_player = described_class.transfer(from: dealer, to: player, amount: amount)
-            expect(new_player.money).to eq(1100)
-            expect(new_dealer.money).to eq(-100)
+            expect(new_player.bankroll).to eq(1100)
+            expect(new_dealer.bankroll).to eq(-100)
           end
 
           it "preseserves types" do
@@ -155,18 +155,18 @@ module Gamble
         end
 
         context "twice" do
-          it "transfers money from player to dealer" do
+          it "transfers bankroll from player to dealer" do
             new_player, new_dealer = described_class.transfer(from: player, to: dealer, amount: amount)
             new_player, new_dealer = described_class.transfer(from: new_player, to: new_dealer, amount: amount)
-            expect(new_player.money).to eq(800)
-            expect(new_dealer.money).to eq(200)
+            expect(new_player.bankroll).to eq(800)
+            expect(new_dealer.bankroll).to eq(200)
           end
 
-          it "transfers money from dealer to player" do
+          it "transfers bankroll from dealer to player" do
             new_dealer, new_player = described_class.transfer(from: dealer, to: player, amount: amount)
             new_dealer, new_player = described_class.transfer(from: new_dealer, to: new_player, amount: amount)
-            expect(new_player.money).to eq(1200)
-            expect(new_dealer.money).to eq(-200)
+            expect(new_player.bankroll).to eq(1200)
+            expect(new_dealer.bankroll).to eq(-200)
           end
         end
       end
