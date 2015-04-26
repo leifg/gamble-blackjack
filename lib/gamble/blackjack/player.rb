@@ -31,7 +31,7 @@ module Gamble
       def deal(*cards)
         raise RuntimeError, "Cannot deal to busted hand" if hand.busted?
 
-        Player.new(
+        self.class.new(
           name: name,
           strategy: strategy,
           bankroll: bankroll,
@@ -41,7 +41,7 @@ module Gamble
       end
 
       def reset
-        Player.new(
+        self.class.new(
           name: name,
           strategy: strategy,
           bankroll: bankroll,
@@ -51,7 +51,7 @@ module Gamble
       end
 
       def add_bankroll(amount)
-        Player.new(
+        self.class.new(
           name: name,
           strategy: strategy,
           bankroll: bankroll + amount,
