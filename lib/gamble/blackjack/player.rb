@@ -68,6 +68,18 @@ module Gamble
         )
       end
 
+      def possible_actions
+        if !dealable?
+          [:stand]
+        elsif hand.splittable?
+          [:double, :hit, :split, :stand]
+        elsif hand.size == 2
+          [:double, :hit, :stand]
+        elsif hand.size > 2
+          [:hit, :stand]
+        end
+      end
+
       def ==(o)
         self.class == o.class &&
         @strategy_module == o.instance_variable_get("@strategy_module") &&

@@ -34,7 +34,7 @@ module Gamble
         up_card = running_participants.last.up_card
 
         played_participants = running_participants.map do |participant|
-          possible_actions = [:hit, :stand]
+          possible_actions = participant.possible_actions
           bet = participant.bet
 
           begin
@@ -52,7 +52,7 @@ module Gamble
               running_shoe, card = running_shoe.draw
               participant = participant.deal(card)
             end
-          end while(action != :stand && participant.dealable?)
+          end while(action == :hit && participant.dealable?)
           [participant, bet]
         end
 

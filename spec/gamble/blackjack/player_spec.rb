@@ -130,6 +130,64 @@ module Gamble
         end
       end
 
+      describe "#possible_actions" do
+        context "2 cards hand" do
+          let(:hand) do
+            Hand.new(
+              Card.new(:seven, :hearts),
+              Card.new(:eight, :diamonds),
+            )
+          end
+
+          it "returns :double, :hit, :stand" do
+            expect(subject.possible_actions).to eq([:double, :hit, :stand])
+          end
+        end
+
+        context "3 cards hand" do
+          let(:hand) do
+            Hand.new(
+              Card.new(:seven, :hearts),
+              Card.new(:eight, :diamonds),
+              Card.new(:ace, :spades),
+            )
+          end
+
+          it "returns :hit, :stand" do
+            expect(subject.possible_actions).to eq([:hit, :stand])
+          end
+        end
+
+        context "5 cards hand" do
+          let(:hand) do
+            Hand.new(
+              Card.new(:four, :hearts),
+              Card.new(:eight, :diamonds),
+              Card.new(:ace, :spades),
+              Card.new(:two, :spades),
+              Card.new(:three, :spades),
+            )
+          end
+
+          it "returns :stand" do
+            expect(subject.possible_actions).to eq([:stand])
+          end
+        end
+
+        context "splittable hand" do
+          let(:hand) do
+            Hand.new(
+              Card.new(:seven, :hearts),
+              Card.new(:seven, :diamonds),
+            )
+          end
+
+          it "returns :double, :hit, :split, :stand" do
+            expect(subject.possible_actions).to eq([:double, :hit, :split, :stand])
+          end
+        end
+      end
+
       describe ".transfer" do
         let(:dealer) { Dealer.new }
         let(:player) { subject }
