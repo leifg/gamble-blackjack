@@ -18,6 +18,8 @@ module Gamble
         end
       end
 
+      include_examples "dealable hand", true
+
       describe "#reset" do
         let(:hand) do
           Hand.new(

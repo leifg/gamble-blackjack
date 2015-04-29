@@ -17,7 +17,7 @@ module Gamble
       end
 
       def dealable?
-        if hand.busted? || hand.cards.count >= 5
+        if hand.busted? || hand.cards.count >= max_cards
           false
         else
           true
@@ -80,6 +80,12 @@ module Gamble
 
       def self.transfer(from:, to:, amount:)
         [from.add_bankroll(amount * -1), to.add_bankroll(amount)]
+      end
+
+      private
+
+      def max_cards
+        5
       end
     end
   end

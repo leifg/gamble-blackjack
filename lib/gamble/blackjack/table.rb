@@ -16,6 +16,7 @@ module Gamble
       end
 
       def next
+        # reshuffle when shoe has less than 10 cards
         if shoe.size < 10
           running_shoe, _ = shoe.reset.draw
         else
@@ -47,7 +48,7 @@ module Gamble
                 shoe: running_shoe,
               )
             end
-            if action == :hit
+            if action == :hit || action == :double
               running_shoe, card = running_shoe.draw
               participant = participant.deal(card)
             end

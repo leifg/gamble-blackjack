@@ -19,45 +19,7 @@ module Gamble
       let(:bet) { 100 }
       let(:hand) { Hand.new }
 
-      describe "#dealable?" do
-        context "empty hand" do
-          let(:hand) { Hand.new }
-
-          it "returns true" do
-            expect(subject.dealable?).to be(true)
-          end
-        end
-
-        context "busted hand" do
-          let(:hand) do
-            Hand.new(
-              Card.new(:king, :hearts),
-              Card.new(:five, :spades),
-              Card.new(:seven, :diamonds),
-            )
-          end
-
-          it "returns false" do
-            expect(subject.dealable?).to be(false)
-          end
-        end
-
-        context "already 5 cards" do
-          let(:hand) do
-            Hand.new(
-              Card.new(:ace, :hearts),
-              Card.new(:five, :spades),
-              Card.new(:three, :diamonds),
-              Card.new(:two, :clubs),
-              Card.new(:six, :hearts),
-            )
-          end
-
-          it "returns false" do
-            expect(subject.dealable?).to be(false)
-          end
-        end
-      end
+      include_examples "dealable hand", false
 
       describe "#act" do
         let(:params) do

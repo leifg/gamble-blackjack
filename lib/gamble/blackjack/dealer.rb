@@ -18,7 +18,7 @@ module Gamble
       end
 
       def max_cards
-        21
+        17
       end
 
       def up_card
