@@ -48,6 +48,7 @@ module Gamble
                 shoe: running_shoe,
               )
             end
+            raise "Illegal action #{action}. Available Actions: #{possible_actions.inspect}" unless possible_actions.include?(action)
             if action == :hit || action == :double
               running_shoe, card = running_shoe.draw
               participant = participant.deal(card)
