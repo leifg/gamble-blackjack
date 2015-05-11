@@ -5,22 +5,14 @@ module Gamble
       attr_reader :playing_strategy
       attr_reader :betting_strategy
       attr_reader :bankroll
-      attr_reader :hand
+      attr_reader :hands
 
-      def initialize(name:, playing_strategy:, betting_strategy:, bankroll:, hand: Hand.new)
+      def initialize(name:, playing_strategy:, betting_strategy:, bankroll:, hands: [])
         @name = name
-        @hand = hand.freeze
+        @hands = Array(hands)
         @bankroll = bankroll.freeze
         @playing_strategy = playing_strategy
         @betting_strategy = betting_strategy
-      end
-
-      def dealable?
-        if hand.busted? || hand.cards.count >= max_cards
-          false
-        else
-          true
-        end
       end
 
       def act(params)
@@ -33,25 +25,13 @@ module Gamble
         bet
       end
 
-      def deal(*cards)
-        raise RuntimeError, "Cannot deal to busted hand" if hand.busted?
-
+      def replace(name: self.name, playing_strategy: self.playing_strategy, betting_strategy: self.betting_strategy, bankroll: self.bankroll, hands: self.hands)
         self.class.new(
           name: name,
           playing_strategy: playing_strategy,
           betting_strategy: betting_strategy,
           bankroll: bankroll,
-          hand: hand.deal(*cards)
-        )
-      end
-
-      def replace(name: self.hand, playing_strategy: self.playing_strategy, betting_strategy: self.betting_strategy, bankroll: self.bankroll, hand: self.hand)
-        self.class.new(
-          name: name,
-          playing_strategy: playing_strategy,
-          betting_strategy: betting_strategy,
-          bankroll: bankroll,
-          hand: hand,
+          hands: hands,
         )
       end
 
@@ -61,7 +41,7 @@ module Gamble
           playing_strategy: playing_strategy,
           betting_strategy: betting_strategy,
           bankroll: bankroll,
-          hand: Hand.new(bet: self.bet(bankroll: bankroll, ))
+          hands: [Hand.new(bet: self.bet(bankroll: bankroll))]
         )
       end
 
@@ -71,26 +51,14 @@ module Gamble
           playing_strategy: playing_strategy,
           betting_strategy: betting_strategy,
           bankroll: bankroll + amount,
-          hand: hand
+          hands: hands,
         )
-      end
-
-      def possible_actions
-        if !dealable?
-          [:stand]
-        elsif hand.splittable?
-          [:double, :hit, :split, :stand]
-        elsif hand.size == 2
-          [:double, :hit, :stand]
-        elsif hand.size > 2
-          [:hit, :stand]
-        end
       end
 
       def ==(o)
         self.class == o.class &&
         self.bankroll == o.bankroll &&
-        self.hand == o.hand
+        self.hands == o.hands
       end
 
       alias_method :eql?, :==
@@ -98,8 +66,6 @@ module Gamble
       def self.transfer(from:, to:, amount:)
         [from.add_bankroll(amount * -1), to.add_bankroll(amount)]
       end
-
-      private
 
       def max_cards
         5

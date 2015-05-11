@@ -9,7 +9,7 @@ module Gamble
           playing_strategy: playing_strategy,
           betting_strategy: betting_strategy,
           bankroll: bankroll,
-          hand: hand,
+          hands: hand,
         )
       end
 
@@ -19,8 +19,6 @@ module Gamble
       let(:hand) { Hand.new }
       let(:betting_strategy) { instance_spy("Proc", call: bet) }
       let(:bet) { 0 }
-
-      include_examples "dealable hand", false
 
       describe "#act" do
         let(:params) do
@@ -47,37 +45,6 @@ module Gamble
         end
       end
 
-      describe "#deal" do
-        let(:card) { Card.new(:seven, :hearts) }
-
-        context "empty hand" do
-          it "returns a player" do
-            expect(subject.deal(card)).to be_a(Player)
-          end
-
-          it "returns a new player" do
-            expect(subject.deal(card)).not_to be_equal(subject)
-          end
-        end
-
-        context "busted hand" do
-          let(:hand) do
-            Hand.new(
-              cards: [
-                Card.new(:eight, :spades),
-                Card.new(:nine, :diamonds),
-                Card.new(:ten, :hearts),
-              ]
-            )
-          end
-
-          it "raises error on dealing busted hand" do
-            expect { subject.deal(card) }.to raise_error(RuntimeError)
-          end
-
-        end
-      end
-
       describe "#reset" do
         let(:hand) do
           Hand.new(
@@ -92,7 +59,7 @@ module Gamble
 
         it "returns player with empty hand" do
           player = subject.reset(shoe: shoe)
-          expect(player.hand.cards).to be_empty
+          expect(player.hands).to eq([Hand.new])
         end
 
         it "returns a player" do
@@ -140,78 +107,12 @@ module Gamble
             playing_strategy: playing_strategy,
             betting_strategy: betting_strategy,
             bankroll: (bankroll + amount),
-            hand: hand,
+            hands: hand,
           )
         end
 
         it "returns a new player with add bankroll" do
           expect(subject.add_bankroll(amount)).to eq(expected_player)
-        end
-      end
-
-      describe "#possible_actions" do
-        context "2 cards hand" do
-          let(:hand) do
-            Hand.new(
-              cards: [
-                Card.new(:seven, :hearts),
-                Card.new(:eight, :diamonds),
-              ]
-            )
-          end
-
-          it "returns :double, :hit, :stand" do
-            expect(subject.possible_actions).to eq([:double, :hit, :stand])
-          end
-        end
-
-        context "3 cards hand" do
-          let(:hand) do
-            Hand.new(
-              cards: [
-                Card.new(:seven, :hearts),
-                Card.new(:eight, :diamonds),
-                Card.new(:ace, :spades),
-              ]
-            )
-          end
-
-          it "returns :hit, :stand" do
-            expect(subject.possible_actions).to eq([:hit, :stand])
-          end
-        end
-
-        context "5 cards hand" do
-          let(:hand) do
-            Hand.new(
-              cards: [
-                Card.new(:four, :hearts),
-                Card.new(:eight, :diamonds),
-                Card.new(:ace, :spades),
-                Card.new(:two, :spades),
-                Card.new(:three, :spades),
-              ]
-            )
-          end
-
-          it "returns :stand" do
-            expect(subject.possible_actions).to eq([:stand])
-          end
-        end
-
-        context "splittable hand" do
-          let(:hand) do
-            Hand.new(
-              cards: [
-                Card.new(:seven, :hearts),
-                Card.new(:seven, :diamonds),
-              ]
-            )
-          end
-
-          it "returns :double, :hit, :split, :stand" do
-            expect(subject.possible_actions).to eq([:double, :hit, :split, :stand])
-          end
         end
       end
 
@@ -232,16 +133,16 @@ module Gamble
               playing_strategy: playing_strategy,
               betting_strategy: betting_strategy,
               bankroll: bankroll,
-              hand: new_hand,
+              hands: new_hand,
             )
           end
 
           it "returns a player" do
-            expect(subject.replace(hand: new_hand)).to be_a(Player)
+            expect(subject.replace(hands: new_hand)).to be_a(Player)
           end
 
           it "returns expected player" do
-            expect(subject.replace(hand: new_hand)).to eq(expected_player)
+            expect(subject.replace(hands: new_hand)).to eq(expected_player)
           end
         end
       end

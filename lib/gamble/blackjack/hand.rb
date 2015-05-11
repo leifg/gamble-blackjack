@@ -31,7 +31,31 @@ module Gamble
         value > Gamble::Blackjack::MAX_VALUE
       end
 
+      def dealable?(max_cards)
+        if busted? || cards.count >= max_cards
+          false
+        else
+          true
+        end
+      end
+
+      def possible_actions(max_cards)
+        if !dealable?(max_cards)
+          [:stand]
+        elsif splittable?
+          [:double, :hit, :split, :stand]
+        elsif size < 2
+          [:hit]
+        elsif size == 2
+          [:double, :hit, :stand]
+        elsif size > 2
+          [:hit, :stand]
+        end
+      end
+
       def deal(dealed_cards)
+        raise RuntimeError, "Cannot deal to busted hand" if busted?
+
         Hand.new(cards: cards + Array(dealed_cards), bet: bet)
       end
 

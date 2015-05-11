@@ -66,7 +66,7 @@ describe "Default Game", type: :integration do
               playing_strategy: playing_strategy,
               betting_strategy: betting_strategy,
               bankroll: 99,
-              hand: Gamble::Blackjack::Hand.new(
+              hands: Gamble::Blackjack::Hand.new(
                 cards: [
                   Gamble::Blackjack::Card.new(:two, :hearts),
                   Gamble::Blackjack::Card.new(:four, :hearts),
@@ -113,7 +113,7 @@ describe "Default Game", type: :integration do
         let(:expected_dealer) do
           Gamble::Blackjack::Dealer.new(
             bankroll: 1,
-            hand: Gamble::Blackjack::Hand.new(
+            hands: Gamble::Blackjack::Hand.new(
               cards: [
                 Gamble::Blackjack::Card.new(:three, :hearts),
                 Gamble::Blackjack::Card.new(:five, :hearts),

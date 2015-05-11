@@ -6,23 +6,27 @@ module Gamble
         playing_strategy: Gamble::Blackjack::Strategies::DealerStrategy.new,
         betting_strategy: proc { 0 },
         bankroll: 0,
-        hand: Hand.new
+        hands: [Hand.new]
       )
         super(
           name: name,
           playing_strategy: playing_strategy,
           betting_strategy: betting_strategy,
           bankroll: bankroll,
-          hand: hand
+          hands: hands
         )
       end
 
-      def max_cards
-        17
+      def hand
+        hands.first
       end
 
       def up_card
         hand.cards.first
+      end
+
+      def max_cards
+        17
       end
     end
   end

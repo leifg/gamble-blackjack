@@ -3,22 +3,8 @@ require "spec_helper"
 module Gamble
   module Blackjack
     describe Dealer do
-      subject { described_class.new(hand: hand) }
+      subject { described_class.new(hands: [hand]) }
       let(:hand) { Hand.new }
-
-      describe "#deal" do
-        let(:card) { Card.new(:queen, :diamonds) }
-
-        it "returns a dealer" do
-          expect(subject.deal(card)).to be_a(Dealer)
-        end
-
-        it "returns a new dealer" do
-          expect(subject.deal(card).object_id).not_to eq(subject.object_id)
-        end
-      end
-
-      include_examples "dealable hand", true
 
       describe "#reset" do
         let(:hand) do
@@ -34,11 +20,26 @@ module Gamble
 
         it "returns dealer with empty hand" do
           dealer = subject.reset(shoe: shoe)
-          expect(dealer.hand.cards).to be_empty
+          expect(dealer.hands.first.cards).to be_empty
         end
 
         it "returns a dealer" do
           expect(subject.reset(shoe: shoe)).to be_a(Dealer)
+        end
+      end
+
+      describe "#hand" do
+        let(:hand) do
+          Hand.new(
+            cards: [
+              Card.new(:ace, :clubs),
+              Card.new(:king, :spades),
+            ]
+          )
+        end
+
+        it "returns first hand" do
+          expect(subject.hand).to eq(hand)
         end
       end
 

@@ -6,6 +6,18 @@ module Gamble
       subject { described_class.new(cards: cards, bet: bet) }
       let(:bet) { 0 }
 
+      context "dealer hand" do
+        let(:max_cards) { 17 }
+        let(:can_deal_more) { true }
+        include_examples "dealable hand"
+      end
+
+      context "player hand" do
+        let(:max_cards) { 5 }
+        let(:can_deal_more) { false }
+        include_examples "dealable hand"
+      end
+
       context "empty hand" do
         let(:cards) { nil }
 
@@ -121,9 +133,10 @@ module Gamble
       end
 
       describe "#deal" do
+        let(:card) { Card.new(:three, :hearts) }
+
         context "regular hand" do
           let(:cards) { [Card.new(:seven, :clubs), Card.new(:eight, :hearts)] }
-          let(:card) { Card.new(:three, :hearts) }
           let(:expected_hand) do
             described_class.new(
               cards: [
@@ -137,6 +150,96 @@ module Gamble
 
           it "returns correct hand" do
             expect(subject.deal(card)).to eq(expected_hand)
+          end
+        end
+
+        context "busted hand" do
+          let(:cards) do
+            [
+              Card.new(:eight, :spades),
+              Card.new(:nine, :diamonds),
+              Card.new(:ten, :hearts),
+            ]
+          end
+
+          it "raises error on dealing busted hand" do
+            expect { subject.deal(card) }.to raise_error(RuntimeError)
+          end
+        end
+      end
+
+      describe "#possible_actions" do
+        let(:max_cards) { 5 }
+
+        context "empty hand" do
+          let(:cards) { [] }
+
+          it "returns :hit" do
+            expect(subject.possible_actions(max_cards)).to eq([:hit])
+          end
+        end
+
+        context "1 card hand" do
+          let(:cards) { [Card.new(:seven, :hearts)] }
+
+          it "returns :hit" do
+            expect(subject.possible_actions(max_cards)).to eq([:hit])
+          end
+        end
+
+        context "2 cards hand" do
+          let(:cards) do
+            [
+              Card.new(:seven, :hearts),
+              Card.new(:eight, :diamonds),
+            ]
+          end
+
+          it "returns :double, :hit, :stand" do
+            expect(subject.possible_actions(max_cards)).to eq([:double, :hit, :stand])
+          end
+        end
+
+        context "3 cards hand" do
+          let(:cards) do
+            [
+              Card.new(:seven, :hearts),
+              Card.new(:eight, :diamonds),
+              Card.new(:ace, :spades),
+            ]
+          end
+
+          it "returns :hit, :stand" do
+            expect(subject.possible_actions(max_cards)).to eq([:hit, :stand])
+          end
+        end
+
+        context "5 cards hand" do
+          let(:cards) do
+            [
+              Card.new(:four, :hearts),
+              Card.new(:eight, :diamonds),
+              Card.new(:ace, :spades),
+              Card.new(:two, :spades),
+              Card.new(:three, :spades),
+            ]
+          end
+
+          it "returns :stand" do
+            expect(subject.possible_actions(max_cards)).to eq([:stand])
+          end
+        end
+
+        context "splittable hand" do
+          let(:cards) do
+            [
+              Card.new(:seven, :hearts),
+              Card.new(:seven, :diamonds),
+            ]
+          end
+
+          it "returns :double, :hit, :split, :stand" do
+            expect(subject.possible_actions(max_cards)).to eq([:double, :hit, :split, :stand])
           end
         end
       end
