@@ -1,19 +1,18 @@
 module Gamble
   module Blackjack
     class Player
-      extend Forwardable
-
       attr_reader :name
-      attr_reader :hand
-      attr_reader :strategy
+      attr_reader :playing_strategy
+      attr_reader :betting_strategy
       attr_reader :bankroll
+      attr_reader :hand
 
-      def initialize(name:, strategy:, bankroll:, bet:, hand: Hand.new)
+      def initialize(name:, playing_strategy:, betting_strategy:, bankroll:, hand: Hand.new)
         @name = name
         @hand = hand.freeze
         @bankroll = bankroll.freeze
-        @bet = bet.freeze
-        @strategy = strategy
+        @playing_strategy = playing_strategy
+        @betting_strategy = betting_strategy
       end
 
       def dealable?
@@ -25,15 +24,13 @@ module Gamble
       end
 
       def act(params)
-        strategy.call(params)
+        playing_strategy.call(params)
       end
 
-      def bet(round = 0)
-        if @bet.respond_to?(:call)
-          @bet.call(round)
-        else
-          @bet
-        end
+      def bet(params)
+        bet = betting_strategy.call(params)
+        raise InsufficientBankroll if bet > bankroll
+        bet
       end
 
       def deal(*cards)
@@ -41,29 +38,39 @@ module Gamble
 
         self.class.new(
           name: name,
-          strategy: strategy,
+          playing_strategy: playing_strategy,
+          betting_strategy: betting_strategy,
           bankroll: bankroll,
-          bet: @bet,
           hand: hand.deal(*cards)
         )
       end
 
-      def reset
+      def replace(name: self.hand, playing_strategy: self.playing_strategy, betting_strategy: self.betting_strategy, bankroll: self.bankroll, hand: self.hand)
         self.class.new(
           name: name,
-          strategy: strategy,
+          playing_strategy: playing_strategy,
+          betting_strategy: betting_strategy,
           bankroll: bankroll,
-          bet: @bet,
-          hand: Hand.new
+          hand: hand,
+        )
+      end
+
+      def reset(shoe:)
+        self.class.new(
+          name: name,
+          playing_strategy: playing_strategy,
+          betting_strategy: betting_strategy,
+          bankroll: bankroll,
+          hand: Hand.new(bet: self.bet(bankroll: bankroll, ))
         )
       end
 
       def add_bankroll(amount)
         self.class.new(
           name: name,
-          strategy: strategy,
+          playing_strategy: playing_strategy,
+          betting_strategy: betting_strategy,
           bankroll: bankroll + amount,
-          bet: @bet,
           hand: hand
         )
       end
@@ -82,9 +89,7 @@ module Gamble
 
       def ==(o)
         self.class == o.class &&
-        @strategy_module == o.instance_variable_get("@strategy_module") &&
         self.bankroll == o.bankroll &&
-        self.bet == o.bet &&
         self.hand == o.hand
       end
 

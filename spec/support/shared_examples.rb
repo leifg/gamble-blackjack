@@ -11,9 +11,11 @@ shared_examples "dealable hand" do |can_deal_more|
     context "busted hand" do
       let(:hand) do
         Gamble::Blackjack::Hand.new(
-          Gamble::Blackjack::Card.new(:king, :hearts),
-          Gamble::Blackjack::Card.new(:five, :spades),
-          Gamble::Blackjack::Card.new(:seven, :diamonds),
+          cards: [
+            Gamble::Blackjack::Card.new(:king, :hearts),
+            Gamble::Blackjack::Card.new(:five, :spades),
+            Gamble::Blackjack::Card.new(:seven, :diamonds),
+          ]
         )
       end
 
@@ -25,11 +27,13 @@ shared_examples "dealable hand" do |can_deal_more|
     context "already 5 cards" do
       let(:hand) do
         Gamble::Blackjack::Hand.new(
-          Gamble::Blackjack::Card.new(:ace, :hearts),
-          Gamble::Blackjack::Card.new(:five, :spades),
-          Gamble::Blackjack::Card.new(:three, :diamonds),
-          Gamble::Blackjack::Card.new(:two, :clubs),
-          Gamble::Blackjack::Card.new(:six, :hearts),
+          cards: [
+            Gamble::Blackjack::Card.new(:ace, :hearts),
+            Gamble::Blackjack::Card.new(:five, :spades),
+            Gamble::Blackjack::Card.new(:three, :diamonds),
+            Gamble::Blackjack::Card.new(:two, :clubs),
+            Gamble::Blackjack::Card.new(:six, :hearts),
+          ]
         )
       end
 

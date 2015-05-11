@@ -3,7 +3,8 @@ require "spec_helper"
 module Gamble
   module Blackjack
     describe Hand do
-      subject { described_class.new(*cards) }
+      subject { described_class.new(cards: cards, bet: bet) }
+      let(:bet) { 0 }
 
       context "empty hand" do
         let(:cards) { nil }
@@ -125,9 +126,12 @@ module Gamble
           let(:card) { Card.new(:three, :hearts) }
           let(:expected_hand) do
             described_class.new(
-              Card.new(:seven, :clubs),
-              Card.new(:eight, :hearts),
-              Card.new(:three, :hearts),
+              cards: [
+                Card.new(:seven, :clubs),
+                Card.new(:eight, :hearts),
+                Card.new(:three, :hearts),
+              ],
+              bet: bet,
             )
           end
 

@@ -28,33 +28,36 @@ module Gamble
           running_shoe, _ = shoe.draw
         end
 
-        running_participants = participants.map(&:reset)
+        running_participants = participants.map{|p| p.reset(shoe: running_shoe)}
         running_shoe, running_participants = deal_cards(running_shoe, running_participants)
 
         up_card = running_participants.last.up_card
 
         played_participants = running_participants.map do |participant|
           possible_actions = participant.possible_actions
-          bet = participant.bet
 
-          begin
-            action = if possible_actions.size == 1
-              possible_actions.first
-            else
-              participant.act(
-                possible_actions: possible_actions,
-                hand: participant.hand,
-                up_card: up_card,
-                shoe: running_shoe,
-              )
-            end
-            raise "Illegal action #{action}. Available Actions: #{possible_actions.inspect}" unless possible_actions.include?(action)
-            if action == :hit || action == :double
-              running_shoe, card = running_shoe.draw
-              participant = participant.deal(card)
-            end
-          end while(action == :hit && participant.dealable?)
-          [participant, bet]
+          new_hands = Array(participant.hand).map do |hand|
+            begin
+              action = if possible_actions.size == 1
+                possible_actions.first
+              else
+                participant.act(
+                  possible_actions: possible_actions,
+                  hand: hand,
+                  up_card: up_card,
+                  shoe: running_shoe,
+                )
+              end
+              raise "Illegal action #{action}. Available Actions: #{possible_actions.inspect}" unless possible_actions.include?(action)
+              if action == :hit || action == :double
+                running_shoe, card = running_shoe.draw
+                hand = hand.deal(card)
+              end
+            end while(action == :hit && participant.dealable?)
+            hand
+          end
+
+          participant.replace(hand: new_hands.first)
         end
 
         result_dealer, result_players = self.class.calculate_bets(played_participants)
@@ -89,24 +92,25 @@ module Gamble
         players + [dealer]
       end
 
-      def self.calculate_bets(players_with_bets)
-        running_dealer, _ = players_with_bets.pop
-        players_with_transfers = players_with_bets.map do |player, bet|
-          transfer = if player.hand.busted? || player.hand.value < running_dealer.hand.value
-            bet
-          elsif player.hand.value > running_dealer.hand.value
-            if player.hand.blackjack?
-              bet = bet * 1.5
+      def self.calculate_bets(players)
+        running_dealer, _ = players.pop
+        players_with_transfers = players.map do |player|
+          transfer_sum = Array(player.hand).inject(0) do |sum, hand|
+            sum += if hand.busted? || hand.value < running_dealer.hand.value
+              hand.bet
+            elsif hand.value > hand.value
+              if player.hand.blackjack?
+                hand.bet * 1.5
+              end
+              hand.bet * -1
+            else
+              0
             end
-            bet * -1
-          else
-            0
           end
-          [player, transfer]
+          [player, transfer_sum]
         end
 
         result_players = []
-
 
         players_with_transfers.each do |player, transfer|
           tmp_player, running_dealer = Player.transfer(from: player, to: running_dealer, amount: transfer)

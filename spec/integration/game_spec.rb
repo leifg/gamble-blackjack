@@ -36,12 +36,17 @@ describe "Default Game", type: :integration do
 
   context "1 Player" do
     let(:player) do
-      Gamble::Blackjack::Player.new(name: "Alice", strategy: strategy, bankroll: 100, bet: 1)
+      Gamble::Blackjack::Player.new(
+        name: "Alice",
+        playing_strategy: playing_strategy,
+        betting_strategy: betting_strategy,
+        bankroll: 100,)
     end
     let(:players) { [ player ] }
 
     context "Player always stands" do
-      let(:strategy) { proc { :stand } }
+      let(:playing_strategy) { proc { :stand } }
+      let(:betting_strategy) { proc { 1 } }
 
       context "1 round" do
         let(:expected_table) do
@@ -58,12 +63,15 @@ describe "Default Game", type: :integration do
           [
             Gamble::Blackjack::Player.new(
               name: "Alice",
-              strategy: strategy,
+              playing_strategy: playing_strategy,
+              betting_strategy: betting_strategy,
               bankroll: 99,
-              bet: 1,
               hand: Gamble::Blackjack::Hand.new(
-                Gamble::Blackjack::Card.new(:two, :hearts),
-                Gamble::Blackjack::Card.new(:four, :hearts),
+                cards: [
+                  Gamble::Blackjack::Card.new(:two, :hearts),
+                  Gamble::Blackjack::Card.new(:four, :hearts),
+                ],
+                bet: 1,
               )
             ),
           ]
@@ -106,10 +114,12 @@ describe "Default Game", type: :integration do
           Gamble::Blackjack::Dealer.new(
             bankroll: 1,
             hand: Gamble::Blackjack::Hand.new(
-              Gamble::Blackjack::Card.new(:three, :hearts),
-              Gamble::Blackjack::Card.new(:five, :hearts),
-              Gamble::Blackjack::Card.new(:six, :hearts),
-              Gamble::Blackjack::Card.new(:seven, :hearts),
+              cards: [
+                Gamble::Blackjack::Card.new(:three, :hearts),
+                Gamble::Blackjack::Card.new(:five, :hearts),
+                Gamble::Blackjack::Card.new(:six, :hearts),
+                Gamble::Blackjack::Card.new(:seven, :hearts),
+              ]
             )
           )
         end

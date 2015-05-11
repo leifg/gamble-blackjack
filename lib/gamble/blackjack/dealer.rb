@@ -3,16 +3,16 @@ module Gamble
     class Dealer < Player
       def initialize(
         name: "Dealer",
+        playing_strategy: Gamble::Blackjack::Strategies::DealerStrategy.new,
+        betting_strategy: proc { 0 },
         bankroll: 0,
-        hand: Hand.new,
-        strategy: Gamble::Blackjack::Strategies::DealerStrategy.new,
-        bet: 0
+        hand: Hand.new
       )
         super(
           name: name,
-          strategy: strategy,
+          playing_strategy: playing_strategy,
+          betting_strategy: betting_strategy,
           bankroll: bankroll,
-          bet: bet,
           hand: hand
         )
       end

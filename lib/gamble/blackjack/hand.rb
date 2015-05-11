@@ -2,13 +2,15 @@ module Gamble
   module Blackjack
     class Hand
       attr_reader :cards
+      attr_reader :bet
 
-      def initialize(*cards)
-        @cards = cards
+      def initialize(cards: [], bet: 0)
+        @cards = Array(cards)
+        @bet = bet
       end
 
       def value
-        Array(cards).sort_by {|c| c.value.max}.inject(0) do |sum, card|
+        cards.sort_by {|c| c.value.max}.inject(0) do |sum, card|
           if (sum + card.value.max) <= Gamble::Blackjack::MAX_VALUE
             sum + card.value.max
           else
@@ -29,8 +31,8 @@ module Gamble
         value > Gamble::Blackjack::MAX_VALUE
       end
 
-      def deal(*dealed_cards)
-        Hand.new(*(cards + dealed_cards))
+      def deal(dealed_cards)
+        Hand.new(cards: cards + Array(dealed_cards), bet: bet)
       end
 
       def size

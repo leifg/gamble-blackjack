@@ -6,18 +6,19 @@ module Gamble
       subject do
         described_class.new(
           name: name,
-          strategy: strategy,
+          playing_strategy: playing_strategy,
+          betting_strategy: betting_strategy,
           bankroll: bankroll,
-          bet: bet,
           hand: hand,
         )
       end
 
       let(:name) { "Joe" }
-      let(:strategy) { double("Strategy", call: :hit) }
+      let(:playing_strategy) { double("playing_strategy", call: :hit) }
       let(:bankroll) { 1000 }
-      let(:bet) { 100 }
       let(:hand) { Hand.new }
+      let(:betting_strategy) { instance_spy("Proc", call: bet) }
+      let(:bet) { 0 }
 
       include_examples "dealable hand", false
 
@@ -39,27 +40,9 @@ module Gamble
             expect(subject.act(params)).to eq(:hit)
           end
 
-          it "sends correct message to strategy" do
+          it "sends correct message to playing_strategy" do
             subject.act(params)
-            expect(strategy).to have_received(:call).with(params)
-          end
-        end
-      end
-
-      describe "#bet" do
-        context "static bet" do
-          let(:bet) { 20 }
-
-          it "returns static bet" do
-            expect(subject.bet).to eq(bet)
-          end
-        end
-
-        context "variable bet" do
-          let(:bet) { proc { |i| i } }
-
-          it "returns variable bet" do
-            expect(subject.bet(17)).to eq(17)
+            expect(playing_strategy).to have_received(:call).with(params)
           end
         end
       end
@@ -80,9 +63,11 @@ module Gamble
         context "busted hand" do
           let(:hand) do
             Hand.new(
-              Card.new(:eight, :spades),
-              Card.new(:nine, :diamonds),
-              Card.new(:ten, :hearts)
+              cards: [
+                Card.new(:eight, :spades),
+                Card.new(:nine, :diamonds),
+                Card.new(:ten, :hearts),
+              ]
             )
           end
 
@@ -96,20 +81,54 @@ module Gamble
       describe "#reset" do
         let(:hand) do
           Hand.new(
-            Card.new(:eight, :spades),
-            Card.new(:nine, :diamonds),
+            cards: [
+              Card.new(:eight, :spades),
+              Card.new(:nine, :diamonds),
+            ]
           )
         end
 
+        let(:shoe) { instance_spy("Gamble::Blackjack::Shoe") }
+
         it "returns player with empty hand" do
-          player = subject.reset
+          player = subject.reset(shoe: shoe)
           expect(player.hand.cards).to be_empty
         end
 
         it "returns a player" do
-          expect(subject.reset).to be_a(Player)
+          expect(subject.reset(shoe: shoe)).to be_a(Player)
         end
       end
+
+      describe "#bet" do
+        let(:bankroll) { 100 }
+        let(:shoe) { instance_spy("Gamble::Blackjack::Shoe") }
+        let(:params) { { bankroll: bankroll, shoe: shoe } }
+
+        context "bankroll sufficient" do
+          let(:bet) { 1 }
+
+          it "returns bet" do
+            expect(subject.bet(params)).to eq(bet)
+          end
+
+          it "calls betting_strategy correctly" do
+            subject.bet(params)
+            expect(betting_strategy).
+              to have_received(:call).
+              with(bankroll: bankroll, shoe: shoe)
+          end
+        end
+
+        context "bankroll insufficient" do
+          let(:bet) { 200 }
+
+          it "raises error" do
+            expect { subject.bet(params) }.to raise_error(InsufficientBankroll)
+          end
+        end
+      end
+
 
       describe "#add_bankroll" do
         let(:bankroll) { 1000 }
@@ -118,9 +137,9 @@ module Gamble
         let(:expected_player) do
           described_class.new(
             name: "Joe",
-            strategy: strategy,
+            playing_strategy: playing_strategy,
+            betting_strategy: betting_strategy,
             bankroll: (bankroll + amount),
-            bet: bet,
             hand: hand,
           )
         end
@@ -134,8 +153,10 @@ module Gamble
         context "2 cards hand" do
           let(:hand) do
             Hand.new(
-              Card.new(:seven, :hearts),
-              Card.new(:eight, :diamonds),
+              cards: [
+                Card.new(:seven, :hearts),
+                Card.new(:eight, :diamonds),
+              ]
             )
           end
 
@@ -147,9 +168,11 @@ module Gamble
         context "3 cards hand" do
           let(:hand) do
             Hand.new(
-              Card.new(:seven, :hearts),
-              Card.new(:eight, :diamonds),
-              Card.new(:ace, :spades),
+              cards: [
+                Card.new(:seven, :hearts),
+                Card.new(:eight, :diamonds),
+                Card.new(:ace, :spades),
+              ]
             )
           end
 
@@ -161,11 +184,13 @@ module Gamble
         context "5 cards hand" do
           let(:hand) do
             Hand.new(
-              Card.new(:four, :hearts),
-              Card.new(:eight, :diamonds),
-              Card.new(:ace, :spades),
-              Card.new(:two, :spades),
-              Card.new(:three, :spades),
+              cards: [
+                Card.new(:four, :hearts),
+                Card.new(:eight, :diamonds),
+                Card.new(:ace, :spades),
+                Card.new(:two, :spades),
+                Card.new(:three, :spades),
+              ]
             )
           end
 
@@ -177,13 +202,46 @@ module Gamble
         context "splittable hand" do
           let(:hand) do
             Hand.new(
-              Card.new(:seven, :hearts),
-              Card.new(:seven, :diamonds),
+              cards: [
+                Card.new(:seven, :hearts),
+                Card.new(:seven, :diamonds),
+              ]
             )
           end
 
           it "returns :double, :hit, :split, :stand" do
             expect(subject.possible_actions).to eq([:double, :hit, :split, :stand])
+          end
+        end
+      end
+
+      describe "#replace" do
+        context "new hand" do
+          let(:new_hand) do
+            Hand.new(
+              cards: [
+                Card.new(:eight, :spades),
+                Card.new(:nine, :diamonds),
+              ]
+            )
+          end
+
+          let(:expected_player) do
+            described_class.new(
+              name: name,
+              playing_strategy: playing_strategy,
+              betting_strategy: betting_strategy,
+              bankroll: bankroll,
+              hand: new_hand,
+            )
+          end
+
+          it "returns a player" do
+            expect(subject.replace(hand: new_hand)).to be_a(Player)
+          end
+
+          it "returns expected player" do
+            expect(subject.replace(hand: new_hand)).to eq(expected_player)
           end
         end
       end
